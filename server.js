@@ -4,6 +4,7 @@ const cors = require('cors');
 const dbConnect = require('./config/dbConnect');
 const { notFound, errorHandler } = require('./middlewares/error');
 const adminRouter = require('./adminRoutes/admins/adminRoute');
+const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRoute');
 const app = express();
 
 //DB
@@ -14,10 +15,11 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-//Admin routes
-app.use('/api/admin', adminRouter);
 
-//Aluno routes
+app.use('/api/admin', adminRouter);
+app.use('/api/modalidades', modalidadeRouter);
+
+
 
 //error handlers
 app.use(notFound);
