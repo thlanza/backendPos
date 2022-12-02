@@ -5,7 +5,10 @@ const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUp
 const adminRouter = express.Router();
 
 adminRouter.post('/primeiroLogin', primeiroLogin);
-adminRouter.post('/registrar', photoUpload.single('image'), redimensionar, registrar);
+adminRouter.post('/registrar', 
+    photoUpload.single('image'), 
+    redimensionar('public/imagens/perfilAdmin'), 
+    registrar);
 adminRouter.post('/login', login);
 
 module.exports = adminRouter;

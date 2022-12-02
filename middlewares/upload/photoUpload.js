@@ -6,8 +6,6 @@ const path = require('path');
 //storage
 const multerStorage = multer.memoryStorage();
 
-caminho = 'public/imagens/perfil/';
-
 //checagem de tipo de arquivo
 const multerFilter = (req, file, cb) => {
     //check file type
@@ -22,7 +20,8 @@ const multerFilter = (req, file, cb) => {
 };
 
 //Redimensionamento de Imagens
-exports.redimensionar = expressAsyncHandler(async (req, res, next) => {  
+exports.redimensionar = (caminho) => {
+    return expressAsyncHandler(async (req, res, next) => {  
     //checar para ver se há arquivo
     if(!req.file) return next();
 
@@ -33,7 +32,7 @@ exports.redimensionar = expressAsyncHandler(async (req, res, next) => {
         .jpeg({ quality: 90 })
         .toFile(path.join(`${caminho}/${req.file.filename}`))
     next();
-});
+})};
 
 exports.photoUpload = multer({
     storage: multerStorage,

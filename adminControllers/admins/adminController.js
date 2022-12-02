@@ -25,7 +25,9 @@ exports.login = expressAsyncHandler(async (req, res) => {
             usuario: usuarioAchado,
             token: generateToken(usuarioAchado?._id)
         })
-    } 
+    } else {
+        throw new Error("Credenciais de login erradas.")
+    }
 });
 
 exports.registrar = expressAsyncHandler(async (req, res) => {
@@ -34,7 +36,7 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
     if (adminExiste) throw new Error("Admin já existe.");
 
     //1. Caminho local para a imagem
-    const localPath = `public/imagens/perfil/${req.file.filename}`;
+    const localPath = `public/imagens/perfilAdmin/${req.file.filename}`;
     //2. Fazer upload para o serviço Cloudinary
     
     const { url } = await cloudinaryUploadImage(localPath);

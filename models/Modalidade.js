@@ -29,6 +29,16 @@ const modalidadeSchema = new mongoose.Schema({
                     }
                 }     
     }],
+}, {
+    toJSON: { virtuals: true},
+    toObject: { virtuals: true }
+});
+
+modalidadeSchema.virtual("alunos", {
+    ref: 'Aluno',
+    localField: '_id',
+    foreignField: 'modalidade',
+    justOne: false
 });
 
 const Modalidade = mongoose.model('Modalidade', modalidadeSchema);

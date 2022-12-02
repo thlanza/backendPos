@@ -5,6 +5,7 @@ const dbConnect = require('./config/dbConnect');
 const { notFound, errorHandler } = require('./middlewares/error');
 const adminRouter = require('./adminRoutes/admins/adminRoute');
 const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRoute');
+const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
 
 //DB
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
+app.use('/api/alunos', alunoRouter);
 
 
 
