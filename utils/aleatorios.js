@@ -12,3 +12,7 @@ exports.aleatorioRetira = (array) => {
 exports.numeroAleatorio = (max) => {
     return Math.floor(Math.random() * max)  + 1;
 }
+
+exports.dataAleatoria = (comeco, final) => {
+    return new Date(comeco.getTime() + Math.random() * (final.getTime() - comeco.getTime()));
+}

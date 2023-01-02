@@ -22,9 +22,8 @@ const { primeiroNome,
     sobrenome, 
     email, 
     senha, 
-    modalidade, 
-    inadimplente, 
-    mesesInadimplente } = req?.body;
+    modalidade 
+ } = req?.body;
 
 const { url } = await cloudinaryUploadImage(localPath);
 const aluno = await Aluno.create({
@@ -33,9 +32,7 @@ const aluno = await Aluno.create({
     email,
     senha,
     fotoDePerfil: url,
-    modalidade,
-    inadimplente,
-    mesesInadimplente
+    modalidade
 });
 //3. Deletar a imagem no servidor local
 fs.unlinkSync(localPath);

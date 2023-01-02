@@ -1,6 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Modalidade = require("../../models/Modalidade");
-const { aleatorioRetira, elementoAleatorio } = require("../../utils/aleatorios");
+const { aleatorioRetira, elementoAleatorio, dataAleatoria } = require("../../utils/aleatorios");
 
 exports.criarModalidade = expressAsyncHandler(async (req, res) => {
     const { nomeModalidade, horario, dias } = req?.body;
@@ -53,10 +53,13 @@ exports.seedModalidades = expressAsyncHandler(async (req, res) => {
         ["Quarta", "Sexta"]
     ]
     for (let i = 0; i < 10; i++) {
+        dataInicial = new Date(2022, 3, 1);
+        dataFinal = new Date(2022, 11, 31);
         array.push({
             nomeModalidade: aleatorioRetira(arrayModalidades),
             horario: elementoAleatorio(arrayHorarios),
-            dias: elementoAleatorio(arrayDias)
+            dias: elementoAleatorio(arrayDias),
+            dataDeCriacao: dataAleatoria(dataInicial, dataFinal)
         });
         console.log(arrayModalidades);
     }
@@ -68,6 +71,12 @@ exports.seedModalidades = expressAsyncHandler(async (req, res) => {
         mensagem: "Seed completo!"
     });
     
+});
+
+exports.umaModalidade = expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const modalidade = await Modalidade.findById(id);
+    res.json(modalidade);
 });
 
 exports.deletarColecaoModalidades = expressAsyncHandler(async (req, res) => {
@@ -86,8 +95,7 @@ exports.atualizarModalidade = expressAsyncHandler(async (req, res) => {
         horario,
         dias
     }, {
-        new: true,
-        runValidators: true
+        new: true
     });
     res.json(modalidadeAtualizada);
 });

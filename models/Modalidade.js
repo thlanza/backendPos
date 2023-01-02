@@ -20,8 +20,16 @@ const modalidadeSchema = new mongoose.Schema({
                 type: String,
                 required: [true, "Dias são obrigatórios"],
                 validate: {
-                    validator: function(element) {
-                        let array = this.dias;
+                    validator: async function(element) {
+                        const modelo = await Modalidade.findById(this?.id);
+                        let array;
+                        if (modelo) {
+                            console.log("modelo", modelo);
+                            console.log("array", this?._update['$set'].dias);
+                            array = this?._update['$set'].dias;
+                        } else {
+                            array = this?.dias;
+                        }
                         let condicao1 = ["Segunda", "Terça", "Quarta", "Quinta",
                              "Sexta", "Sábado", "Domingo"].includes(element);     
                         let condicao2 = new Set(array).size === array.length;
@@ -29,6 +37,10 @@ const modalidadeSchema = new mongoose.Schema({
                     }
                 }     
     }],
+    dataDeCriacao: {
+        type: Date,
+        default: () => Date.now()
+    }
 }, {
     toJSON: { virtuals: true},
     toObject: { virtuals: true }
