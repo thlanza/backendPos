@@ -8,7 +8,6 @@ const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRo
 const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
 const passport = require('passport');
-const passportSetup = require('./passport');
 const cookieSession = require('cookie-session');
 
 //DB
@@ -16,13 +15,16 @@ dbConnect();
 
 //Middleware
 app.use(express.json());
-app.use(
-	cors({
-		origin: "http://localhost:3000",
-		methods: "GET,POST,PUT,DELETE",
-		credentials: true,
-	})
-);
+app.use(express.urlencoded({ extended: true }));
+
+// app.use(
+// 	cors({
+// 		origin: "http://localhost:3000",
+// 		methods: "GET,POST,PUT,DELETE",
+// 		credentials: true,
+// 	})
+// );
+app.use(cors());
 app.use(
     cookieSession({
         name: "session",
@@ -31,7 +33,7 @@ app.use(
     })
 );
 
-app.use(express.urlencoded({ extended: true }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());

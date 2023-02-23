@@ -1,6 +1,8 @@
 const expressAsyncHandler = require("express-async-handler");
 const Modalidade = require("../../models/Modalidade");
 const { aleatorioRetira, elementoAleatorio, dataAleatoria } = require("../../utils/aleatorios");
+const fs = require('fs');
+const PDFDocument = require('pdfkit');
 
 exports.criarModalidade = expressAsyncHandler(async (req, res) => {
     const { nomeModalidade, horario, dias } = req?.body;
@@ -67,11 +69,40 @@ exports.seedModalidades = expressAsyncHandler(async (req, res) => {
   
     await Modalidade.insertMany(array)
 
-    return res.json({
+    return res.status(201).json({
         mensagem: "Seed completo!"
     });
     
 });
+
+exports.seedModalidadesTesteCalendario = expressAsyncHandler(async (req, res) => {
+    let array = [];
+
+    let data1 = new Date(2023, 1, 1);
+    let data2 = new Date(2023, 1, 2);
+    let atividade1 = {
+        nomeModalidade: "Natação 1",
+        horario: "08:00",
+        dias: ["Segunda", "Quarta"],
+        dataDeCriacao: data1
+    };
+    let atividade2 = {
+        nomeModalidade: "Yoga 1",
+        horario: "09:00",
+        dias: ["Terça", "Quinta"],
+        dataDeCriacao: data2
+    };
+
+    array.push(atividade1);
+    array.push(atividade2);
+  
+
+    await Modalidade.insertMany(array)
+
+    return res.status(201).json({
+        mensagem: "Seed Teste Calendário completo!"
+    });
+}); 
 
 exports.umaModalidade = expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -82,7 +113,7 @@ exports.umaModalidade = expressAsyncHandler(async (req, res) => {
 exports.deletarColecaoModalidades = expressAsyncHandler(async (req, res) => {
     await Modalidade.deleteMany({});
 
-    return res.json({
+    return res.status(204).json({
         mensagem: "Banco Deletado!"
     });
 });
@@ -98,6 +129,53 @@ exports.atualizarModalidade = expressAsyncHandler(async (req, res) => {
         new: true
     });
     res.json(modalidadeAtualizada);
+});
+
+exports.pdfDownload = expressAsyncHandler(async (req, res) => {
+
+    var doc = new PDFDocument({bufferPages: true});
+
+    let buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+    
+        let pdfData = Buffer.concat(buffers);
+        res.writeHead(200, {
+        'Content-Length': Buffer.byteLength(pdfData),
+        'Content-Type': 'application/pdf',
+        'Content-disposition': 'attachment;  filename=modalidades.pdf',})
+        .end(pdfData);
+    
+    });
+
+    const object = await Modalidade.find({  }).lean();
+    
+    let string = '';
+    object.forEach(element => {
+        let stringModalidade = element.nomeModalidade;
+        let stringModalidadeFinal = `Nome da Modalidade: ${stringModalidade} \n`;
+        string += stringModalidadeFinal;
+        let stringHorario = element.horario;
+        let stringHorarioFinal = `Horario: ${stringHorario} \n`;
+        string += stringHorarioFinal;
+        let stringDias = element.dias.join(', ');
+        let stringDiasFinal = `Dias: ${stringDias} \n`;
+        string += stringDiasFinal;
+        string += '\n'
+    });
+
+    let titulo = 'Lista das Modalidades \n\n';
+    doc.font('Helvetica-Bold')
+        .fontSize(14)
+        .text(titulo, {
+            align: 'center'
+        });
+
+    doc.font('Helvetica')
+         .fontSize(12)
+         .text(string);
+    doc.end();
+  
 });
 
 exports.deletarModalidade = expressAsyncHandler(async (req, res) => {

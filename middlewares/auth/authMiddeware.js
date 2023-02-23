@@ -21,6 +21,7 @@ return expressAsyncHandler(async (req, res, next) => {
                 usuario = await Aluno.findById(decoded?.id).select('-senha');
                 }
                 if (!usuario) {
+                    console.log('usuario não achado')
                     throw new Error('Não autorizado. Token expirado. Faça login novamente.')
                 }
                 // anexar o objeto usuário ao request

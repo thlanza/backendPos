@@ -20,7 +20,14 @@ exports.login = expressAsyncHandler(async (req, res) => {
 
     const usuarioAchado = await Admin.findOne({ email});
 
-    if (usuarioAchado && usuarioAchado.senhaConfere(senha)) {
+    if (!usuarioAchado) {
+        throw new Error("Credenciais de login erradas.")
+    }
+
+    let confere = await usuarioAchado.senhaConfere(senha);
+
+
+    if (usuarioAchado && confere) {
         res.json({
             usuario: usuarioAchado,
             token: generateToken(usuarioAchado?._id)
@@ -53,4 +60,10 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
         usuario: admin,
         token: generateToken(admin._id)
     });
+});
+
+exports.deletarAdmin = expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const adminDeletado = await Admin.findByIdAndDelete(id); 
+    res.status(204).json({"Admin deletado": adminDeletado });
 });

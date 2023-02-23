@@ -46,6 +46,30 @@ baseSchema.pre('save', async function(next) {
     next();
 });
 
+baseSchema.pre('insertMany', async function(next, docs) {
+    if (Array.isArray(docs) && docs.length) {
+        const usuariosHasheados = docs.map(async (user) => {
+            return await new Promise((resolve, reject) => {
+            bcrypt.genSalt(10).then((salt) => {
+                let senha = user.senha.toString();
+                bcrypt.hash(senha, salt).then(hash => {
+                    user.senha = hash;
+                    resolve(user)
+                }).catch(e => {
+                    reject(e);
+                })
+            }).catch((e) => {
+                reject(e);
+            })   
+        });
+    });
+        docs = await Promise.all(usuariosHasheados); 
+        next();
+    } else {
+        return next(new Error("Lista de usuários não deve estar vazia"))
+    }
+});
+
 baseSchema.methods.senhaConfere = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.senha);
 };
