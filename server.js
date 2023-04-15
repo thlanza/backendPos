@@ -54,7 +54,8 @@ passport.use(new GoogleStrategy({
     clientID:     process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     callbackURL: `${process.env.CLIENT_URL}/auth/google/callback`,
-    passReqToCallback   : true
+    passReqToCallback   : true,
+    scope: ['profile', 'email']
   }, authUser));
 
 
