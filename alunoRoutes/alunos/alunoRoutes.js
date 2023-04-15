@@ -64,7 +64,9 @@ alunoRouter.get(
     }),
 );
 
-alunoRouter.get("/google", passport.authenticate("google", ["profile", "email"]));
+alunoRouter.get("/google", passport.authenticate("google", {
+    scope: ["profile", "email"]}
+));
 
 alunoRouter.get("/logout", (req, res) => {
     req.logout();
