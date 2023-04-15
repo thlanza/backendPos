@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
 	cors({
-		origin: ["https://academia-lanza-admin.onrender.com", "https://academia-lanza-aluno.onrender.com"],
+		origin: '*',
 		methods: "GET,POST,PUT,DELETE",
 		credentials: true,
 	})
