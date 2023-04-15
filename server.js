@@ -9,7 +9,8 @@ const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
 const passport = require('passport');
 const cookieSession = require('cookie-session');
-const session = require('express-session')
+const session = require('express-session');
+const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
 //DB
 dbConnect();
