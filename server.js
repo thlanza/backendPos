@@ -8,9 +8,9 @@ const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRo
 const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
 const passport = require('passport');
+require('./passport');
 const cookieSession = require('cookie-session');
 const session = require('express-session');
-const GoogleStrategy = require( 'passport-google-oauth20' ).Strategy;
 
 //DB
 dbConnect();
@@ -45,33 +45,33 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-authUser = (request, accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
-  }
+// authUser = (request, accessToken, refreshToken, profile, done) => {
+//     return done(null, profile);
+//   }
 
 
-passport.use(new GoogleStrategy({
-    clientID:     process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: `${process.env.CLIENT_URL}/auth/google/callback`,
-    passReqToCallback   : true
-  }, authUser));
+// passport.use(new GoogleStrategy({
+//     clientID:     process.env.CLIENT_ID,
+//     clientSecret: process.env.CLIENT_SECRET,
+//     callbackURL: `${process.env.CLIENT_URL}/auth/google/callback`,
+//     passReqToCallback   : true
+//   }, authUser));
 
 
-passport.serializeUser( (user, done) => { 
-    console.log(`\n--------> Serialize User:`)
-    console.log(user)
+// passport.serializeUser( (user, done) => { 
+//     console.log(`\n--------> Serialize User:`)
+//     console.log(user)
  
-    done(null, user)
-} )
+//     done(null, user)
+// } )
 
 
-passport.deserializeUser((user, done) => {
-        console.log("\n--------- Deserialized User:")
-        console.log(user)
+// passport.deserializeUser((user, done) => {
+//         console.log("\n--------- Deserialized User:")
+//         console.log(user)
   
-        done (null, user)
-}) 
+//         done (null, user)
+// }) 
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
