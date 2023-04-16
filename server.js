@@ -53,7 +53,7 @@ authUser = (request, accessToken, refreshToken, profile, done) => {
 passport.use(new GoogleStrategy({
     clientID:     process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: `${process.env.CLIENT_URL}/api/alunos/google/callback`,
+    callbackURL: 'api/alunos/google/callback',
     passReqToCallback   : true,
     scope: ['profile', 'email']
   }, authUser));
