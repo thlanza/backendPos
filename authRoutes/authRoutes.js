@@ -5,7 +5,9 @@ const authRouter = express.Router();
 
 //google login
 authRouter.get("/login/success", (req, res) => {
-    console.log(req);
+    console.log(req.session);
+    console.log(req.isAuthenticated())
+    console.log(req._passport);
     if (req.user) {
         res.status(200).json({
             error: false,
