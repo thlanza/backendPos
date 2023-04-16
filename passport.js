@@ -7,10 +7,9 @@ passport.use(
             clientID: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
             callbackURL: 'https://backend-da-academia-lanza-modulo-2-da-pos-5258.onrender.com/auth/google/callback',
-            scope: ["profile", "email"],
-            passReqToCallback: true
+            scope: ["profile", "email"]
         },
-        function(req, token, refreshToken, profile, callback) {
+        function(token, refreshToken, profile, callback) {
             callback(null, req);
         }
     )
