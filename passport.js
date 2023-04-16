@@ -11,8 +11,7 @@ passport.use(
             passReqToCallback: true
         },
         function(req, token, refreshToken, profile, callback) {
-            let user = req.user;
-            callback(null, user);
+            callback(null, req);
         }
     )
 );
