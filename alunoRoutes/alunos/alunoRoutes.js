@@ -57,7 +57,7 @@ alunoRouter.get("/login/failed", (req, res) => {
 
 
 alunoRouter.get(
-    "google/callback",
+    "/google/callback",
     passport.authenticate("google", { 
         successRedirect: process.env.CLIENT_URL,
         failureRedirect: "/login/failed" 
