@@ -11,6 +11,7 @@ const passport = require('passport');
 const passportSetup = require('./passport');
 const cookieSession = require('cookie-session');
 const session = require('express-session');
+const authRouter = require('./authRoutes/authRoutes');
 
 //DB
 dbConnect();
@@ -77,7 +78,7 @@ app.use(passport.session());
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
 app.use('/api/alunos', alunoRouter);
-
+app.use('/auth', authRouter);
 
 
 //error handlers
