@@ -33,24 +33,24 @@ app.use(
 	})
 );
 
-app.use(
-    cookieSession({
-        name: "session",
-        keys: ["thlanza"],
-        maxAge: 24 * 60 * 60 * 100
-    })
-);
+// app.use(
+//     cookieSession({
+//         name: "session",
+//         keys: ["thlanza"],
+//         maxAge: 24 * 60 * 60 * 100
+//     })
+// );
 
-app.use(session({
-    secret: "secret",
-    resave: false ,
-    saveUninitialized: true ,
-    cookie: { secure: true }
-}))
+// app.use(session({
+//     secret: "secret",
+//     resave: false ,
+//     saveUninitialized: true ,
+//     cookie: { secure: true }
+// }))
 
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 if (!fs.existsSync){
     fs.mkdirSync(dir, { recursive: true });
@@ -58,21 +58,21 @@ if (!fs.existsSync){
 
 
 
-function makeDir(dir, recursive=false) {
-    if (recursive === false) {
-        if (!fs.existsSync){
-            fs.mkdirSync(dir);
-        }
-    } else {
-        if (!fs.existsSync){
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    }
-}
+// function makeDir(dir, recursive=false) {
+//     if (recursive === false) {
+//         if (!fs.existsSync){
+//             fs.mkdirSync(dir);
+//         }
+//     } else {
+//         if (!fs.existsSync){
+//             fs.mkdirSync(dir, { recursive: true });
+//         }
+//     }
+// }
 
-makeDir(dirPublic);
-makeDir(dirImagens);
-makeDir(dirPerfilAluno);
+// makeDir(dirPublic);
+// makeDir(dirImagens);
+// makeDir(dirPerfilAluno);
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
