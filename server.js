@@ -12,6 +12,10 @@ const passportSetup = require('./passport');
 const cookieSession = require('cookie-session');
 const session = require('express-session');
 const authRouter = require('./authRoutes/authRoutes');
+const fs = require('fs');
+let dirPublic = './public';
+let dirImagens = './public/imagens'
+let dirPerfilAluno = './public/imagens/perfilAluno';
 
 //DB
 dbConnect();
@@ -48,40 +52,30 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// authUser = (request, accessToken, refreshToken, profile, done) => {
-//     return done(null, profile);
-//   }
+if (!fs.existsSync){
+    fs.mkdirSync(dir, { recursive: true });
+}
 
+function makeDir(dir, recursive=false) {
+    if (recursive === false) {
+        if (!fs.existsSync){
+            fs.mkdirSync(dir);
+        }
+    } else {
+        if (!fs.existsSync){
+            fs.mkdirSync(dir, { recursive: true });
+        }
+    }
+}
 
-// passport.use(new GoogleStrategy({
-//     clientID:     process.env.CLIENT_ID,
-//     clientSecret: process.env.CLIENT_SECRET,
-//     callbackURL: `/api/alunos/google/callback`,
-//     passReqToCallback   : true,
-//     scope: ['profile', 'email']
-//   }, authUser));
-
-
-// passport.serializeUser( (user, done) => { 
-//     console.log(`\n--------> Serialize User:`)
-//     console.log(user)
- 
-//     done(null, user)
-// } )
-
-
-// passport.deserializeUser((user, done) => {
-//         console.log("\n--------- Deserialized User:")
-//         console.log(user)
-  
-//         done (null, user)
-// }) 
+makeDir(dirPublic);
+makeDir(dirImagens);
+makeDir(dirPerfilAluno);
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
 app.use('/api/alunos', alunoRouter);
 app.use('/auth', authRouter);
-
 
 //error handlers
 app.use(notFound);
