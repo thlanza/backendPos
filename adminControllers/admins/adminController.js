@@ -43,7 +43,7 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
     if (adminExiste) throw new Error("Admin já existe.");
 
     //1. Caminho local para a imagem
-    const localPath = `public/imagens/perfilAdmin/${req.file.filename}`;
+    const localPath = `./${req.file.filename}`;
     //2. Fazer upload para o serviço Cloudinary
     
     const { url } = await cloudinaryUploadImage(localPath);

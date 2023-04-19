@@ -19,7 +19,7 @@ const alunoExiste = await Aluno.findOne({ email: req?.body?.email });
 if (alunoExiste) throw new Error("Aluno já existe.");
 
 //1. Caminho local para a imagem
-const localPath = `public/imagens/perfilAluno/${req.file.filename}`;
+const localPath = `./${req.file.filename}`;
 
 //2. Fazer upload para o serviço Cloudinary
 
