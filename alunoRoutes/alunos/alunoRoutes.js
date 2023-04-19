@@ -23,7 +23,7 @@ alunoRouter.get('/', getAlunos);
 alunoRouter.delete('/aluno/:id', validarMongoId, deletarAluno);
 alunoRouter.post('/matricular', 
     photoUpload.single('image'), 
-    redimensionar('public/imagens/perfilAluno'), 
+    redimensionar('./'), 
     matricular);
 
 alunoRouter.post('/logar', logar);
