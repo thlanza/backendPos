@@ -4,7 +4,7 @@ const cloudinaryUploadImage = require("../../utils/cloudinary");
 const fs = require("fs");
 const generateToken = require("../../config/token/generateToken");
 const { faker } = require('@faker-js/faker');
-const { aleatorioRetira, elementoAleatorio, numeroAleatorio } = require("../../utils/aleatorios");
+const { aleatorioRetira, elementoAleatorio, numeroAleatorio, dataAleatoria } = require("../../utils/aleatorios");
 const Modalidade = require("../../models/Modalidade");
 const PDFDocument = require('pdfkit');
 const client = require('https');
@@ -120,6 +120,9 @@ exports.seedAlunos = expressAsyncHandler(async (req, res) => {
     let arrayBoolean = [true, false];
 
     const gerarUsuarioAleatorio = () => {
+        let dataInicial, dataFinal;
+        dataInicial = new Date(2022, 3, 1);
+        dataFinal = new Date(2022, 11, 31);
         const booleano = elementoAleatorio(arrayBoolean);
         let mesesInadimplente;
         if (booleano) {
@@ -135,6 +138,7 @@ exports.seedAlunos = expressAsyncHandler(async (req, res) => {
             fotoDePerfil: faker.image.avatar(640, 480, true),
             modalidade: elementoAleatorio(ids),
             inadimplente: booleano,
+            dataDeInscricao: dataAleatoria(dataInicial, dataFinal),
             mesesInadimplente
         }
     }

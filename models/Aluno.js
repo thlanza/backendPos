@@ -14,6 +14,10 @@ const Aluno = Base.discriminator('Aluno', new mongoose.Schema({
             mesesInadimplente: {
                 type: Number,
                 default: 0
+            },
+            dataDeInscricao: {
+                type: Date,
+                default: () => Date.now()
             }
 }));
 
