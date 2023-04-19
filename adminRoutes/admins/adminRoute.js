@@ -7,7 +7,7 @@ const adminRouter = express.Router();
 adminRouter.post('/primeiroLogin', primeiroLogin);
 adminRouter.post('/registrar', 
     photoUpload.single('image'), 
-    redimensionar('public/imagens/perfilAdmin'), 
+    redimensionar('./'), 
     registrar);
 adminRouter.post('/login', login);
 adminRouter.delete('/administrador/:id', deletarAdmin);
