@@ -58,7 +58,7 @@ exports.dadosParaGraficoAlunosInscricao = expressAsyncHandler(async (req, res) =
 
     contagemArray.forEach(element => {
         contagemArrayOfObjects.push({
-            [element[0]]: element[1]
+            "chave": element[0], "valor": element[1]
         })
     });
 
