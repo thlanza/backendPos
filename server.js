@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
 	cors({
-		origin: ['https://academia-lanza-aluno.onrender.com', 'https://academia-lanza-admin.onrender.com', 'http://localhost:3000', 'http://localhost:30001'],
+		origin: ['https://academia-lanza-aluno.onrender.com', 'https://academia-lanza-admin.onrender.com', 'http://localhost:3000', 'http://localhost:3001'],
         // origin: ['http://localhost:3000', 'http://localhost:3001'],
 		methods: "GET,POST,PUT,DELETE",
 		credentials: true,

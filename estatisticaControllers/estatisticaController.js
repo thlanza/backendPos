@@ -8,10 +8,11 @@ exports.dadosParaGraficoAlunosInscricao = expressAsyncHandler(async (req, res) =
 
     dadosAlunos.forEach(element => {
         const date = new Date(element.dataDeInscricao);
-        const month = date.toLocaleString('default', { month: 'long'});
+        const month = date.toLocaleString('pt-BR', { month: 'long'});
         meses.push(month)              
     });
 
+   
     const contagem = {};
     meses.forEach((el) => {
         contagem[el] = contagem[el] ? (contagem[el] + 1) : 1
