@@ -149,6 +149,8 @@ exports.seedAlunos = expressAsyncHandler(async (req, res) => {
         array.push(gerarUsuarioAleatorio());
     }
 
+    console.log(array);
+
     await Aluno.insertMany(array);
 
     return res.status(201).json({

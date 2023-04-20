@@ -13,6 +13,7 @@ const cookieSession = require('cookie-session');
 const session = require('express-session');
 const authRouter = require('./authRoutes/authRoutes');
 const fs = require('fs');
+const estatisticaRouter = require('./estatisticaRouter/estatisticaRouter');
 let dirPublic = './public';
 let dirImagens = './public/imagens'
 let dirPerfilAluno = './public/imagens/perfilAluno';
@@ -52,9 +53,9 @@ app.use(
 // app.use(passport.initialize());
 // app.use(passport.session());
 
-if (!fs.existsSync){
-    fs.mkdirSync(dir, { recursive: true });
-}
+// if (!fs.existsSync){
+//     fs.mkdirSync(dir, { recursive: true });
+// }
 
 
 
@@ -77,6 +78,7 @@ if (!fs.existsSync){
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
 app.use('/api/alunos', alunoRouter);
+app.use('/api/estatisticas', estatisticaRouter)
 app.use('/auth', authRouter);
 
 //error handlers
