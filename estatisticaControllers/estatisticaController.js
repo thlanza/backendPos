@@ -77,8 +77,6 @@ exports.dadosParaGraficoModalidades = expressAsyncHandler(async (req, res) => {
     dadosModalidades.forEach(element => {
            let alunos = element.alunos;
            let numeroAlunos = alunos.length;
-           console.log("nomeModalidade", element.nomeModalidade);  
-           console.log("númeroAlunos", numeroAlunos);  
            contagemArray.push({
             "chave": element.nomeModalidade, "valor": numeroAlunos
            })     
