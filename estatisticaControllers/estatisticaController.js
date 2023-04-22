@@ -86,3 +86,19 @@ exports.dadosParaGraficoModalidades = expressAsyncHandler(async (req, res) => {
     res.json(contagemArray);
 
     });
+
+exports.dadosParaIndiceInadimplencia = expressAsyncHandler(async (req, res) => {      
+
+    const dadosAlunos = await Aluno.find({ });
+
+
+    dadosAlunos.forEach(element => {
+        const date = new Date(element.dataDeInscricao);
+        const month = date.toLocaleString('pt-BR', { month: 'long'});
+        meses.push(month)              
+    });
+
+
+    res.json("pronto");
+
+    });
