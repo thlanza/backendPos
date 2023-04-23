@@ -7,16 +7,9 @@ const adminRouter = require('./adminRoutes/admins/adminRoute');
 const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRoute');
 const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
-const passport = require('passport');
-const passportSetup = require('./passport');
-const cookieSession = require('cookie-session');
-const session = require('express-session');
 const authRouter = require('./authRoutes/authRoutes');
-const fs = require('fs');
 const estatisticaRouter = require('./estatisticaRouter/estatisticaRouter');
-let dirPublic = './public';
-let dirImagens = './public/imagens'
-let dirPerfilAluno = './public/imagens/perfilAluno';
+
 
 //DB
 dbConnect();

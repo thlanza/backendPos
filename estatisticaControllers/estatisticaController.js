@@ -87,18 +87,57 @@ exports.dadosParaGraficoModalidades = expressAsyncHandler(async (req, res) => {
 
     });
 
-exports.dadosParaIndiceInadimplencia = expressAsyncHandler(async (req, res) => {      
+exports.dadosParaGraficoInadimplencia = expressAsyncHandler(async (req, res) => {      
 
     const dadosAlunos = await Aluno.find({ });
 
 
     dadosAlunos.forEach(element => {
-        const date = new Date(element.dataDeInscricao);
-        const month = date.toLocaleString('pt-BR', { month: 'long'});
-        meses.push(month)              
+        console.log(element)         
     });
 
+    let inadimplente = 0;
+    let emDia = 0;
 
-    res.json("pronto");
+    dadosAlunos.forEach(element => {
+        if (element.inadimplente === true) {
+            inadimplente++;
+        } else {
+            emDia++;
+        }           
+    });
+
+    let contagemArray = [];
+    contagemArray.push({
+        "chave": "inadimplente", "valor": inadimplente
+    });
+    contagemArray.push({
+        "chave": "em dia", "valor": emDia
+    });
+
+    res.json(contagemArray);;
+
+    });
+
+exports.dadosParaGraficoMesesInadimplencia = expressAsyncHandler(async (req, res) => {      
+
+    const dadosAlunos = await Aluno.find({ });
+
+    let mesesInadimplente = []
+
+    dadosAlunos.forEach(element => {
+        mesesInadimplente.push(element.mesesInadimplente)          
+    });
+
+    const contagem = {};
+    mesesInadimplente.forEach((el) => {
+        contagem[el] = contagem[el] ? (contagem[el] + 1) : 1
+    });
+    let contagemArray = [];
+    Object.keys(contagem).forEach(element => {
+        contagemArray.push({chave: element, valor: contagem[element]})
+    })
+
+    res.json(contagemArray);;
 
     });
