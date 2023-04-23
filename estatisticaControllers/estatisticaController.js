@@ -135,7 +135,8 @@ exports.dadosParaGraficoMesesInadimplencia = expressAsyncHandler(async (req, res
     });
     let contagemArray = [];
     Object.keys(contagem).forEach(element => {
-        contagemArray.push({chave: `${element} mês(meses) inadimplente`, valor: contagem[element]})
+        let mes = element <= 1 ? "mês": "meses";
+        contagemArray.push({chave: `${element} ${mes} inadimplente`, valor: contagem[element]})
     })
 
     res.json(contagemArray);;
