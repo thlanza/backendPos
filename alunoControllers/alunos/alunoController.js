@@ -12,6 +12,7 @@ const path = require('path');
 const cwd = process.cwd();
 const axios = require('axios');
 const https = require('https');
+const Presenca = require("../../models/Presenca");
 
 exports.matricular = expressAsyncHandler(async (req, res) => {
 //Checar se o admin já existe
@@ -240,4 +241,53 @@ exports.pdfDownload = expressAsyncHandler(async (req, res) => {
 
     doc.end();
 
+});
+
+exports.notificarPresenca = expressAsyncHandler(async (req, res) => {
+    const { nomeModalidade, dataDaPresenca, presenca, nomeAluno } = req.body;
+
+    if(presenca === 'não informado') throw new Error("Você deve informar se estava presente ou faltou.")
+
+    let dataDePresencaExistente = await Presenca.find({ dataDaPresenca }); 
+    if(dataDePresencaExistente.length === 0) {
+        const modalidades = await Modalidade.find({ nomeModalidade: nomeModalidade }).populate('alunos');
+        if(modalidades.length === 0) throw new Error("Modalidade não encontrada.");
+        const alunos = modalidades?.[0].alunos;
+        let alunosNomes = [];
+        alunos.forEach(element => {
+            let nome = element?.primeiroNome + " " + element?.sobrenome;
+            alunosNomes.push(nome);
+        });
+        if(!alunosNomes.includes(nomeAluno)) throw new Error("O aluno não está matriculado nessa modalidade.")
+        let nomesAlunos = alunos.map(aluno =>  {  
+            let nome = `${aluno.primeiroNome} ${aluno.sobrenome}`
+            return ({
+            'nomeAluno': nome,
+            'presenca': nome === nomeAluno ? presenca : 'não informado'
+        })});
+
+        const presencaModel = await Presenca.create({
+            presencas: nomesAlunos,
+            dataDaPresenca,
+            nomeModalidade
+        });
+        
+        return res.json(presencaModel);
+    } else {
+        let presencas = dataDePresencaExistente?.[0].presencas;
+        let nomeAlunosPresentes = [];
+        presencas.forEach(element => {
+            nomeAlunosPresentes.push(element.nomeAluno);
+        });
+        let index = presencas.map(e => e.nomeAluno).indexOf(nomeAluno);
+        if (index === -1) throw new Error("O aluno não está matriculado nessa modalidade.")
+        presencas[index].presenca = presenca;
+        let objetoSalvo = dataDePresencaExistente[0];
+        const salvo = await Presenca.findOneAndUpdate(
+            { dataDaPresenca },
+            { $set: objetoSalvo },
+            { new: true}
+        )
+        return res.json(salvo);
+    }
 });

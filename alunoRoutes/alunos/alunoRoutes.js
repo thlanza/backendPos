@@ -8,7 +8,8 @@ const {
     logar, 
     deletarAluno,
     pdfDownload,
-    cancelarInscricao
+    cancelarInscricao,
+    notificarPresenca
 } = require('../../alunoControllers/alunos/alunoController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
@@ -33,6 +34,7 @@ alunoRouter.post('/matricularGoogle', matricularGoogle)
 alunoRouter.post('/seedAlunos', seedAlunos);
 alunoRouter.delete('/deletarColecaoAlunos', deletarColecaoAlunos);
 alunoRouter.delete('/cancelarInscricao', authMiddleware('usuario'), cancelarInscricao);
+alunoRouter.post('/notificarPresenca', notificarPresenca);
 
 alunoRouter.get('/download', 
 cors({

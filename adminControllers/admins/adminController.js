@@ -3,6 +3,8 @@ const Admin = require("../../models/Admin");
 const fs = require('fs');
 const cloudinaryUploadImage = require("../../utils/cloudinary");
 const generateToken = require("../../config/token/generateToken");
+const Presenca = require("../../models/Presenca");
+const Modalidade = require("../../models/Modalidade");
 
 exports.primeiroLogin = expressAsyncHandler(async (req, res) => {
     const { email, senha } = req.body;
@@ -66,4 +68,33 @@ exports.deletarAdmin = expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
     const adminDeletado = await Admin.findByIdAndDelete(id); 
     res.status(204).json({"Admin deletado": adminDeletado });
+});
+
+exports.listaDePresenca = expressAsyncHandler(async (req, res) => {
+    const { modalidadeId, mes, ano, dia } = req.query;
+    let data = `${dia}/${mes}/${ano}`;
+    const dataExistente = await Presenca.find({ dataDaPresenca: data }); 
+    if(dataExistente.length === 0) {
+        const modalidades = await Modalidade.findById(modalidadeId).populate('alunos');
+        const alunos = modalidades.alunos;
+        const nomeModalidade = modalidades.nomeModalidade;
+        let nomesAlunos = alunos.map(aluno => ({
+            'nomeAluno': `${aluno.primeiroNome} ${aluno.sobrenome}`,
+            'presenca': 'não informado'
+        }));
+        const presenca = await Presenca.create({
+            presencas: nomesAlunos,
+            dataDaPresenca: data,
+            nomeModalidade
+        });
+        res.status(200).json(presenca);
+        await Presenca.deleteOne({ _id: presenca._id })
+        return;
+    } else {
+        console.log(dataExistente);
+        console.log('presença existe')
+        res.status(200).json("teste");
+        return;
+    }
+ 
 });

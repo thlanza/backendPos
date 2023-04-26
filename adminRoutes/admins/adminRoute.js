@@ -1,5 +1,5 @@
 const express = require('express');
-const { primeiroLogin, registrar, login, deletarAdmin } = require('../../adminControllers/admins/adminController');
+const { primeiroLogin, registrar, login, deletarAdmin, listaDePresenca } = require('../../adminControllers/admins/adminController');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
 
 const adminRouter = express.Router();
@@ -11,5 +11,6 @@ adminRouter.post('/registrar',
     registrar);
 adminRouter.post('/login', login);
 adminRouter.delete('/administrador/:id', deletarAdmin);
+adminRouter.get('/listaDePresenca', listaDePresenca);
 
 module.exports = adminRouter;
