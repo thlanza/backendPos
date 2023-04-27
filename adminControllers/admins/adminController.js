@@ -72,6 +72,15 @@ exports.deletarAdmin = expressAsyncHandler(async (req, res) => {
 
 exports.listaDePresenca = expressAsyncHandler(async (req, res) => {
     const { modalidadeId, mes, ano, dia } = req.query;
+    if (!parseInt(mes) || !parseInt(dia) || !parseInt(ano)) {
+        throw new Error("Deve ser número")
+    }
+    if (parseInt(mes) > 12 || parseInt(mes) < 1) {
+        throw new Error("Mês inválido")
+    }
+    if (parseInt(dia) > 31 || parseInt(dia) < 1) {
+        throw new Error("Dia inválido")
+    }
     let data = `${dia}/${mes}/${ano}`;
     const dataExistente = await Presenca.find({ dataDaPresenca: data }); 
     if(dataExistente.length === 0) {
