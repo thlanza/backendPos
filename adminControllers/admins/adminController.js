@@ -91,9 +91,7 @@ exports.listaDePresenca = expressAsyncHandler(async (req, res) => {
         await Presenca.deleteOne({ _id: presenca._id })
         return;
     } else {
-        console.log(dataExistente);
-        console.log('presença existe')
-        res.status(200).json("teste");
+        res.status(200).json(dataExistente);
         return;
     }
  
