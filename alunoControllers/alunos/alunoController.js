@@ -1,6 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Aluno = require("../../models/Aluno");
-const cloudinaryUploadImage = require("../../utils/cloudinary");
+const { cloudinaryUploadImage, cloudinaryDelete } = require("../../utils/cloudinary");
 const fs = require("fs");
 const generateToken = require("../../config/token/generateToken");
 const { faker } = require('@faker-js/faker');
@@ -13,6 +13,7 @@ const cwd = process.cwd();
 const axios = require('axios');
 const https = require('https');
 const Presenca = require("../../models/Presenca");
+const Comprovante = require("../../models/Comprovante");
 
 exports.matricular = expressAsyncHandler(async (req, res) => {
 //Checar se o admin já existe
@@ -46,6 +47,18 @@ res.json({
     usuario: aluno,
     token: generateToken(aluno._id)
 });
+});
+
+exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) => {
+    const localPath = `./${req.file.filename}`;
+    const { url } = await cloudinaryUploadImage(localPath);
+    const idAluno = req?.usuario?._id;
+
+    const comprovante = await Comprovante.create({
+        idAluno,
+        urlFoto: url
+    });
+    return res.status(200).json(comprovante);
 });
 
 exports.matricularGoogle = expressAsyncHandler(async (req, res) => {
@@ -99,7 +112,6 @@ exports.deletarAluno = expressAsyncHandler(async (req, res) => {
 });
 
 exports.cancelarInscricao = expressAsyncHandler(async (req, res) => {
-    console.log('chamado');
     const userId = req?.usuario?.id?.toString();
     const aluno = await Aluno.findById(userId);
     if (aluno.inadimplente) {

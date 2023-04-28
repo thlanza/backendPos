@@ -1,7 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Modalidade = require("../../models/Modalidade");
 const { aleatorioRetira, elementoAleatorio, dataAleatoria } = require("../../utils/aleatorios");
-const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
 exports.criarModalidade = expressAsyncHandler(async (req, res) => {

@@ -19,4 +19,16 @@ const cloudinaryUploadImage = async (fileToUpload) => {
     }
 };
 
-module.exports = cloudinaryUploadImage;
+const cloudinaryDelete = async (fileName) => {
+    return await cloudinary.v2.uploader.destroy(fileName, { invalidate: true, resource_type: 'image' },
+    function(err, res) {
+        if(err) {
+            console.log(err);
+        }
+        console.log(res)
+    }
+    );
+  
+}
+
+module.exports = { cloudinaryUploadImage, cloudinaryDelete };

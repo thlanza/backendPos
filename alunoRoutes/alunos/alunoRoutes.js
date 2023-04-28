@@ -9,19 +9,19 @@ const {
     deletarAluno,
     pdfDownload,
     cancelarInscricao,
-    notificarPresenca
+    notificarPresenca,
+    uploadDeComprovanteDePagamento
 } = require('../../alunoControllers/alunos/alunoController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
-const passport = require("passport");
-const validarMongoId = require('../../utils/validarMongoId');
+const { validarMongoIdMiddleware } = require('../../utils/validarMongoId');
 const cors = require('cors');
 
 const alunoRouter = express.Router();
 
 
 alunoRouter.get('/', getAlunos);
-alunoRouter.delete('/aluno/:id', validarMongoId, deletarAluno);
+alunoRouter.delete('/aluno/:id', validarMongoIdMiddleware, deletarAluno);
 alunoRouter.post('/matricular', 
     photoUpload.single('image'), 
     redimensionar('./'), 
@@ -35,6 +35,12 @@ alunoRouter.post('/seedAlunos', seedAlunos);
 alunoRouter.delete('/deletarColecaoAlunos', deletarColecaoAlunos);
 alunoRouter.delete('/cancelarInscricao', authMiddleware('usuario'), cancelarInscricao);
 alunoRouter.post('/notificarPresenca', notificarPresenca);
+
+alunoRouter.post('/comprovante', 
+authMiddleware('usuario'), 
+photoUpload.single('image'), 
+redimensionar('./'), 
+uploadDeComprovanteDePagamento);
 
 alunoRouter.get('/download', 
 cors({

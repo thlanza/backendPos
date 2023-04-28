@@ -1,10 +1,14 @@
 const expressAsyncHandler = require("express-async-handler");
 const Admin = require("../../models/Admin");
 const fs = require('fs');
-const cloudinaryUploadImage = require("../../utils/cloudinary");
+const { cloudinaryUploadImage, cloudinaryDelete } = require("../../utils/cloudinary");
 const generateToken = require("../../config/token/generateToken");
 const Presenca = require("../../models/Presenca");
 const Modalidade = require("../../models/Modalidade");
+const Comprovante = require("../../models/Comprovante");
+const Aluno = require("../../models/Aluno");
+const { validarMongoIdMetodo } = require("../../utils/validarMongoId");
+
 
 exports.primeiroLogin = expressAsyncHandler(async (req, res) => {
     const { email, senha } = req.body;
@@ -103,4 +107,56 @@ exports.listaDePresenca = expressAsyncHandler(async (req, res) => {
         res.status(200).json(dataExistente[0]);
         return;
     }
+});
+
+exports.painelDeComprovantes = expressAsyncHandler(async (req, res) => { 
+    const comprovantes = await Comprovante.find({ });
+    return res.status(200).json(comprovantes);
+});
+
+exports.deletarFoto = expressAsyncHandler(async (req, res) => { 
+    let url = 'https://res.cloudinary.com/dghg3ip4e/image/upload/v1682688457/trppvwf8wxt5vs99uqdo.jpg';
+    const re =  /(?:.+\/)(.+)/;
+    const myArray = re.exec(url);
+    let imagem = myArray[1];
+    let imagemFormatada = imagem.replace('.jpg', '');
+    console.log(imagemFormatada);
+    const data = await cloudinaryDelete(imagemFormatada);
+    console.log("data", data);
+    return res.status(200).json("teste");
+});
+
+exports.validarComprovante = expressAsyncHandler(async (req, res) => { 
+    const { valido, idComprovante } = req.body;
+    const deletar = async (url) => {
+        const re =  /(?:.+\/)(.+)/;
+        const resultados = re.exec(url);
+        const imagem = resultados[1].replace('.jpg', '');
+        
+        await cloudinaryDelete(imagem);
+    }
+    validarMongoIdMetodo(idComprovante);
+    const comprovante = await Comprovante.findById(idComprovante);
+    if (!comprovante) throw new Error("Comprovante não achado.")
+    if (valido==="valido") {
+        const idAluno = comprovante.idAluno;
+        const atualizacao = {
+            inadimplente: false,
+            mesesInadimplente: 0
+        }
+        await Aluno.findByIdAndUpdate(idAluno, atualizacao, {
+            returnOriginal: false
+        });
+        await deletar(comprovante.urlFoto);
+        
+        await Comprovante.deleteOne({ _id: idComprovante })
+        return res.status(200).json({ comprovante: "válido" });
+    }
+    if (valido==="invalido") {
+        await deletar(comprovante.urlFoto);
+
+        await Comprovante.deleteOne({ _id: idComprovante })
+        return res.status(200).json({ comprovante: "inválido" });
+    }
+    throw new Error("Deve ser válido ou inválido");
 });
