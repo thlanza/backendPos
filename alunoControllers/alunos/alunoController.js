@@ -50,14 +50,19 @@ res.json({
 });
 
 exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) => {
+    const { mes, ano
+     } = req?.body;
     const localPath = `./${req.file.filename}`;
     const { url } = await cloudinaryUploadImage(localPath);
     const idAluno = req?.usuario?._id;
 
     const comprovante = await Comprovante.create({
         idAluno,
+        mes,
+        ano,
         urlFoto: url
     });
+    fs.unlinkSync(localPath);
     return res.status(200).json(comprovante);
 });
 

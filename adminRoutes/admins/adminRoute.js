@@ -1,5 +1,5 @@
 const express = require('express');
-const { primeiroLogin, registrar, login, deletarAdmin, listaDePresenca, painelDeComprovantes, validarComprovante, deletarFoto } = require('../../adminControllers/admins/adminController');
+const { primeiroLogin, registrar, login, deletarAdmin, listaDePresenca, painelDeComprovantes, validarComprovante, seedComprovantes, criarImagensComprovantes, deletarImagens } = require('../../adminControllers/admins/adminController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
 
@@ -15,6 +15,8 @@ adminRouter.delete('/administrador/:id', deletarAdmin);
 adminRouter.get('/listaDePresenca', listaDePresenca);
 adminRouter.get('/painelDeComprovantes', painelDeComprovantes);
 adminRouter.post('/validarComprovantes', validarComprovante);
-adminRouter.get('/deletarFoto', deletarFoto);
+adminRouter.get('/criarImagensComprovantes', criarImagensComprovantes);
+adminRouter.get('/seedComprovantes', seedComprovantes);
+adminRouter.get('/deletarImagens', deletarImagens);
 
 module.exports = adminRouter;
