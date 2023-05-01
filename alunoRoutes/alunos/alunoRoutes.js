@@ -39,7 +39,7 @@ alunoRouter.post('/notificarPresenca', notificarPresenca);
 alunoRouter.post('/comprovante', 
 authMiddleware('usuario'), 
 photoUpload.single('image'), 
-redimensionar('./'), 
+redimensionar('./', 'comprovante'), 
 uploadDeComprovanteDePagamento);
 
 alunoRouter.get('/download', 

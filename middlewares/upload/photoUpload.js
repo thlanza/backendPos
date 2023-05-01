@@ -20,13 +20,21 @@ const multerFilter = (req, file, cb) => {
 };
 
 //Redimensionamento de Imagens
-exports.redimensionar = (caminho) => {
+exports.redimensionar = (caminho, comprovante = '') => {
     return expressAsyncHandler(async (req, res, next) => {  
     //checar para ver se há arquivo
     if(!req.file) return next();
 
     req.file.filename = `perfil-${Date.now()}-${req.file.originalname}`;
 
+    if (comprovante === 'comprovante') {
+        await sharp(req.file.buffer)
+        .resize(600, 300)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(path.join(`${caminho}/${req.file.filename}`))
+        next();
+    }
     await sharp(req.file.buffer)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
