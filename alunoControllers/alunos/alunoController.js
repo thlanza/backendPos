@@ -95,6 +95,29 @@ res.json({
 });
 });
 
+exports.alunoPorId = expressAsyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const usuarioAchado = await Aluno.findById(id);
+
+    if (usuarioAchado) {
+        return res.json({
+            usuario: usuarioAchado,
+        })
+    } else {
+        throw new Error("Não há aluno com esse id")
+    }
+});
+
+exports.inadimplentes = expressAsyncHandler(async (req, res) => {
+    const inadimplentes = await Aluno.find({ inadimplente: true });
+    return res.json({
+        inadimplentes
+    });
+});
+
+
+
 exports.logar = expressAsyncHandler(async (req, res) => {
     const { email, senha } = req.body;
 

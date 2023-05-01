@@ -4,7 +4,7 @@ const dbConnect = async () => {
     try {
         console.log("NODE_ENV", process.env.NODE_ENV);
         if (process.env.NODE_ENV === "test") {
-            await mongoose.connect(process.env.TEST_DATABASE, {});
+            await mongoose.connect(process.env.TEST_DATABASE_MODULO_3, {});
         } else if (process.env.NODE_ENV === "development") {
             await mongoose.connect(process.env.DEVELOPMENT_DATABASE, {});
         } else if (process.env.NODE_ENV === "production") {

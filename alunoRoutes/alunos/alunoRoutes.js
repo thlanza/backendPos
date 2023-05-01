@@ -10,7 +10,9 @@ const {
     pdfDownload,
     cancelarInscricao,
     notificarPresenca,
-    uploadDeComprovanteDePagamento
+    uploadDeComprovanteDePagamento,
+    alunoPorId,
+    inadimplentes
 } = require('../../alunoControllers/alunos/alunoController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
@@ -35,16 +37,18 @@ alunoRouter.post('/seedAlunos', seedAlunos);
 alunoRouter.delete('/deletarColecaoAlunos', deletarColecaoAlunos);
 alunoRouter.delete('/cancelarInscricao', authMiddleware('usuario'), cancelarInscricao);
 alunoRouter.post('/notificarPresenca', notificarPresenca);
+alunoRouter.get('/alunoPorId/:id', alunoPorId);
+alunoRouter.get('/inadimplentes', inadimplentes);
 
 alunoRouter.post('/comprovante', 
-authMiddleware('usuario'), 
-photoUpload.single('image'), 
-redimensionar('./', 'comprovante'), 
-uploadDeComprovanteDePagamento);
+    authMiddleware('usuario'), 
+    photoUpload.single('image'), 
+    redimensionar('./', 'comprovante'), 
+    uploadDeComprovanteDePagamento);
 
 alunoRouter.get('/download', 
-cors({
-    exposedHeaders: ['Content-Disposition']
-}), pdfDownload);
+    cors({
+        exposedHeaders: ['Content-Disposition']
+    }), pdfDownload);
 
 module.exports = alunoRouter;

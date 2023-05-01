@@ -9,10 +9,9 @@ const Comprovante = require("../../models/Comprovante");
 const Aluno = require("../../models/Aluno");
 const { validarMongoIdMetodo } = require("../../utils/validarMongoId");
 const { loadImage, createCanvas } = require('canvas');
-const { dataAleatoria } = require("../../utils/aleatorios");
+const { dataAleatoria, elementoAleatorio } = require("../../utils/aleatorios");
 const path = require('path');
-
-
+const { faker } = require('@faker-js/faker');
 
 exports.primeiroLogin = expressAsyncHandler(async (req, res) => {
     const { email, senha } = req.body;
@@ -133,17 +132,35 @@ exports.validarComprovante = expressAsyncHandler(async (req, res) => {
     if (!comprovante) throw new Error("Comprovante não achado.")
     if (valido==="valido") {
         const idAluno = comprovante.idAluno;
-        const atualizacao = {
-            inadimplente: false,
-            mesesInadimplente: 0
-        }
-        await Aluno.findByIdAndUpdate(idAluno, atualizacao, {
-            returnOriginal: false
-        });
-        await deletar(comprovante.urlFoto);
+        const aluno = await Aluno.findById(idAluno);
+        if (aluno.mesesInadimplente === 1 || 0) {
+            const atualizacao = {
+                inadimplente: false,
+                mesesInadimplente: 0
+            }
+            await deletar(comprovante.urlFoto);
+
+            await Aluno.findByIdAndUpdate(idAluno, atualizacao, {
+                returnOriginal: false
+            });
         
-        await Comprovante.deleteOne({ _id: idComprovante })
-        return res.status(200).json({ comprovante: "válido" });
+            await Comprovante.deleteOne({ _id: idComprovante })
+            return res.status(200).json({ comprovante: "válido" });
+        };
+        if (aluno.mesesInadimplente > 1) {
+            const atualizacao = {
+                mesesInadimplente: aluno.mesesInadimplente - 1
+            };
+
+            await deletar(comprovante.urlFoto);
+
+            await Aluno.findByIdAndUpdate(idAluno, atualizacao, {
+                returnOriginal: false
+            });
+        
+            await Comprovante.deleteOne({ _id: idComprovante })
+            return res.status(200).json({ comprovante: "válido" });
+        }
     }
     if (valido==="invalido") {
         await deletar(comprovante.urlFoto);
@@ -153,6 +170,7 @@ exports.validarComprovante = expressAsyncHandler(async (req, res) => {
     }
     throw new Error("Deve ser válido ou inválido");
 });
+
 
 exports.seedComprovantes = expressAsyncHandler(async (req, res) => { 
 
@@ -314,3 +332,122 @@ exports.criarImagensComprovantes = expressAsyncHandler(async (req, res) => {
     return res.status(200).json("pronto");
 });
 
+exports.mudancaDeMes = expressAsyncHandler(async (req, res) => {
+    const alunos = await Aluno.find({ });
+    alunos.forEach(async aluno => {
+        let inadimplente = aluno.inadimplente;
+        if (inadimplente === false) {
+            aluno.inadimplente = true;
+            aluno.mesesInadimplente = 0;
+            await aluno.save();
+        } else {
+            let mesesInadimplente = aluno.mesesInadimplente;
+            mesesInadimplente++;
+            aluno.mesesInadimplente = mesesInadimplente;
+            await aluno.save();
+        }
+    });
+    res.status(200).json("um mês se passou, ajustes foram feitos");
+});
+
+exports.seedTestes = expressAsyncHandler(async (req, res) => {
+    let array = [];
+
+    let data1 = new Date(2023, 1, 1);
+    let data2 = new Date(2023, 1, 2);
+    let atividade1 = {
+        nomeModalidade: "Natação 1",
+        horario: "08:00",
+        dias: ["Segunda", "Quarta"],
+        dataDeCriacao: data1
+    };
+    let atividade2 = {
+        nomeModalidade: "Yoga 1",
+        horario: "09:00",
+        dias: ["Terça", "Quinta"],
+        dataDeCriacao: data2
+    };
+
+    array.push(atividade1);
+    array.push(atividade2);
+  
+
+    await Modalidade.insertMany(array);
+
+    const modalidades = await Modalidade.find({});
+    const ids = modalidades.map(element => element._id.toString());
+
+    await Aluno.create({
+        primeiroNome: 'Thiago',
+        sobrenome: 'Lanza',
+        email: 'thlanza@gmail.com',
+        senha: 'senha1',
+        fotoDePerfil: faker.image.avatar(640, 480, true),
+        modalidade: elementoAleatorio(ids),
+        inadimplente: false,
+        mesesInadimplente: 0
+    });
+
+    await Aluno.create({
+        primeiroNome: 'Zé',
+        sobrenome: 'das Couve',
+        email: 'zedascouve@gmail.com',
+        senha: 'senha1',
+        fotoDePerfil: faker.image.avatar(640, 480, true),
+        modalidade: elementoAleatorio(ids),
+        inadimplente: true,
+        mesesInadimplente: 1
+    });
+
+    await Aluno.create({
+        primeiroNome: 'Bim',
+        sobrenome: 'da Ambulância',
+        email: 'bim@gmail.com',
+        senha: 'senha1',
+        fotoDePerfil: faker.image.avatar(640, 480, true),
+        modalidade: elementoAleatorio(ids),
+        inadimplente: true,
+        mesesInadimplente: 2
+    });
+
+    const alunos = await Aluno.find({});
+    const idsAlunos = alunos.map(element => element._id.toString());
+
+    let enumPresencas =  ['presente', 'faltou', 'não informado'];
+
+    let arrayPresencas = alunos.map(aluno =>  {  
+        let nome = `${aluno.primeiroNome} ${aluno.sobrenome}`
+        return ({
+        'nomeAluno': nome,
+        'presenca': elementoAleatorio(enumPresencas)
+    })});
+
+
+   
+    for (let i = 0; i < 6; i++) {
+        await Comprovante.create({
+            idAluno: elementoAleatorio(idsAlunos),
+            urlFoto: faker.image.avatar(640, 480, true),
+            mes: 4,
+            ano: 2022
+        });   
+    }
+
+    await Presenca.create({
+        presencas: arrayPresencas,
+        dataDaPresenca: '02/02/2022',
+        nomeModalidade: 'Natação 1'
+    });
+
+
+
+    return res.json("pronto")
+});
+
+exports.resetTestes = expressAsyncHandler(async (req, res) => {
+    await Modalidade.deleteMany({});
+    await Aluno.deleteMany({});
+    await Comprovante.deleteMany({});
+    await Presenca.deleteMany({});    
+    return res.json("pronto")
+});
