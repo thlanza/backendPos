@@ -29,6 +29,7 @@ return expressAsyncHandler(async (req, res, next) => {
                 next();
             }
         } catch (err) {
+            console.log(err);
             throw new Error('Não autorizado. Token expirado. Faça login novamente.');
         }
     } else {

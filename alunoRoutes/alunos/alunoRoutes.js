@@ -12,7 +12,8 @@ const {
     notificarPresenca,
     uploadDeComprovanteDePagamento,
     alunoPorId,
-    inadimplentes
+    inadimplentes,
+    mudarModalidade
 } = require('../../alunoControllers/alunos/alunoController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
@@ -36,6 +37,7 @@ alunoRouter.post('/matricularGoogle', matricularGoogle)
 alunoRouter.post('/seedAlunos', seedAlunos);
 alunoRouter.delete('/deletarColecaoAlunos', deletarColecaoAlunos);
 alunoRouter.delete('/cancelarInscricao', authMiddleware('usuario'), cancelarInscricao);
+alunoRouter.put('/mudarModalidade', authMiddleware('usuario'), mudarModalidade);
 alunoRouter.post('/notificarPresenca', notificarPresenca);
 alunoRouter.get('/alunoPorId/:id', alunoPorId);
 alunoRouter.get('/inadimplentes', inadimplentes);

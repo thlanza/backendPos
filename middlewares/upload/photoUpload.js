@@ -34,12 +34,14 @@ exports.redimensionar = (caminho, comprovante = '') => {
         .jpeg({ quality: 90 })
         .toFile(path.join(`${caminho}/${req.file.filename}`))
         next();
+        return;
     }
     await sharp(req.file.buffer)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
         .toFile(path.join(`${caminho}/${req.file.filename}`))
     next();
+    return;
 })};
 
 exports.photoUpload = multer({

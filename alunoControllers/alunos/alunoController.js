@@ -4,16 +4,13 @@ const { cloudinaryUploadImage, cloudinaryDelete } = require("../../utils/cloudin
 const fs = require("fs");
 const generateToken = require("../../config/token/generateToken");
 const { faker } = require('@faker-js/faker');
-const { aleatorioRetira, elementoAleatorio, numeroAleatorio, dataAleatoria } = require("../../utils/aleatorios");
+const { elementoAleatorio, numeroAleatorio, dataAleatoria } = require("../../utils/aleatorios");
 const Modalidade = require("../../models/Modalidade");
 const PDFDocument = require('pdfkit');
-const client = require('https');
-const path = require('path');
-const cwd = process.cwd();
-const axios = require('axios');
-const https = require('https');
+
 const Presenca = require("../../models/Presenca");
 const Comprovante = require("../../models/Comprovante");
+const { limparDir } = require("../../utils/limparDir");
 
 exports.matricular = expressAsyncHandler(async (req, res) => {
 //Checar se o admin já existe
@@ -42,11 +39,26 @@ const aluno = await Aluno.create({
     modalidade
 });
 //3. Deletar a imagem no servidor local
-fs.unlinkSync(localPath);
-res.json({
+limparDir();
+return res.json({
     usuario: aluno,
     token: generateToken(aluno._id)
 });
+});
+
+exports.mudarModalidade = expressAsyncHandler(async (req, res) => {
+    const { modalidadeEscolhida } = req.body;
+    const userId = req?.usuario?.id?.toString();
+    const aluno = await Aluno.findById(userId).populate('modalidade');
+    const todasModalidades= await Modalidade.find({ });
+    const modalidadesPossiveis = Array.from(new Set(todasModalidades.map(elemento => elemento.nomeModalidade)));
+    if (!modalidadesPossiveis.includes(modalidadeEscolhida)) {
+        throw new Error('A modalidade deve ser uma das já existentes.')
+    };
+    const modalidadeId = aluno.modalidade._id;
+    const atualizacao = { nomeModalidade: modalidadeEscolhida }
+    const modalidadeModificada = await Modalidade.findByIdAndUpdate(modalidadeId, atualizacao);
+    return res.json({ modalidadeModificada })
 });
 
 exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) => {
@@ -62,7 +74,7 @@ exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) =>
         ano,
         urlFoto: url
     });
-    fs.unlinkSync(localPath);
+    limparDir();
     return res.status(200).json(comprovante);
 });
 
@@ -98,7 +110,7 @@ res.json({
 exports.alunoPorId = expressAsyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    const usuarioAchado = await Aluno.findById(id);
+    const usuarioAchado = await Aluno.findById(id).populate('modalidade');
 
     if (usuarioAchado) {
         return res.json({
