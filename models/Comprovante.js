@@ -6,7 +6,7 @@ const comprovanteSchema = new mongoose.Schema({
                 type: String,
         },
         urlFoto: {
-            required: [true, 'O nome do aluno é obrigatório.'],
+            required: [true, 'A url é obrigatória.'],
             type: String,
         },
         mes: {

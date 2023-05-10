@@ -17,7 +17,9 @@ exports.limparDir = () => {
         }
     
         walkSync(myPath, function(filePath, stat) {
-            if(path.extname(filePath).toLowerCase() !== '.jpg') {
+            const permitidos = ['.jpg', '.jpeg'];
+            const extensao = path.extname(filePath).toLowerCase();
+            if(!permitidos.includes(extensao)) {
                 filePath = '';
             }
             if(path.parse(filePath).base === 'blank.jpg') {
@@ -25,12 +27,14 @@ exports.limparDir = () => {
             }
             // filePath = path.extname(filePath).toLowerCase() === '.jpg' || path.parse(filePath).base === 'blank.jpg' ? filePath : '';
             if (filePath !== '') caminhos.push(filePath);
+            console.log(caminhos);
         });
     };
     
  
     uploadDir(path.resolve('./'));
     caminhos.forEach(async (element) => {  
+            console.log("elemento", element);
             fs.unlink(element, function(err) {
                 if(err && err.code == 'ENOENT') {
                     console.info("Arquivo não existe, não será removido.");

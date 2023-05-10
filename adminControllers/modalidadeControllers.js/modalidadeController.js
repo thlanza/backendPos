@@ -62,7 +62,6 @@ exports.seedModalidades = expressAsyncHandler(async (req, res) => {
             dias: elementoAleatorio(arrayDias),
             dataDeCriacao: dataAleatoria(dataInicial, dataFinal)
         });
-        console.log(arrayModalidades);
     }
 
   

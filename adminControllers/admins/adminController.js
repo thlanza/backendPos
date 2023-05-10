@@ -12,6 +12,7 @@ const { loadImage, createCanvas } = require('canvas');
 const { dataAleatoria, elementoAleatorio } = require("../../utils/aleatorios");
 const path = require('path');
 const { faker } = require('@faker-js/faker');
+const { limparDir } = require("../../utils/limparDir");
 
 exports.primeiroLogin = expressAsyncHandler(async (req, res) => {
     const { email, senha } = req.body;
@@ -46,6 +47,26 @@ exports.login = expressAsyncHandler(async (req, res) => {
     }
 });
 
+exports.numeroAlunos = expressAsyncHandler(async (req, res) => {
+   const alunos = await Aluno.find({}); 
+   const numero = alunos.length;
+   return res.json({"numero": numero});
+});
+
+exports.indiceInadimplencia = expressAsyncHandler(async (req, res) => {
+    const alunos = await Aluno.find({}); 
+    const numeroAlunos = alunos.length;
+    const inadimplentes = await Aluno.find({ inadimplente: true });
+    const numeroInadimplentes = inadimplentes.length;
+    let indice;
+    if(numeroAlunos === 0) {
+        indice = 0;
+        return res.json({"índice": indice })
+    }
+    indice = numeroInadimplentes / numeroAlunos * 100;
+    return res.json({"indice": indice});
+ });
+
 exports.registrar = expressAsyncHandler(async (req, res) => {
     //Checar se o admin já existe
     const adminExiste = await Admin.findOne({ email: req?.body?.email });
@@ -64,7 +85,7 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
         fotoDePerfil: url
     });
     //3. Deletar a imagem no servidor local
-    fs.unlinkSync(localPath);
+    limparDir();
     res.json({
         usuario: admin,
         token: generateToken(admin._id)
@@ -248,6 +269,7 @@ exports.deletarImagens = expressAsyncHandler(async (req, res) => {
 
 
 exports.criarImagensComprovantes = expressAsyncHandler(async (req, res) => { 
+    const numeroImagens = req.params.n;
     const alunos = await Aluno.find();
     const nomeAlunos = alunos.map(element => {
         let nome_completo = element.primeiroNome + ' ' + element.sobrenome;
@@ -265,7 +287,7 @@ exports.criarImagensComprovantes = expressAsyncHandler(async (req, res) => {
 
     const gerarAleatorioDoArray = (array) => array[Math.floor(Math.random() * array.length)];
 
-    const gerarComprovante = (arrayAlunos, arrayModalidades) => {
+    const gerarComprovante = async (arrayAlunos, arrayModalidades) => {
         const width = 600
         const height = 330
         const canvas = createCanvas(width, height)
@@ -317,15 +339,28 @@ exports.criarImagensComprovantes = expressAsyncHandler(async (req, res) => {
         let numero = Math.floor(Math.random() * 1001);
 
         let id = mapeamento[cliente];
-    
-        loadImage('./blank.jpg').then((data) => {
-          ctx.drawImage(data, 340, 515, 70, 70)
-          const imgBuffer = canvas.toBuffer('image/png')
-          fs.writeFileSync(`./comprovante${numero}-${id}.jpg`, imgBuffer)
-        })
+
+        async function loadImageAndSave(id, numero, mes, ano) {
+            const localImage = await loadImage('./blank.jpg');
+            ctx.drawImage(localImage, 340, 515, 70, 70);
+            const imgBuffer = canvas.toBuffer('image/png');
+            const diretorio = `./comprovante${numero}-${id}.jpg`
+            fs.writeFileSync(diretorio, imgBuffer);
+            const { url } = await cloudinaryUploadImage(diretorio);
+            await Comprovante.create({
+                idAluno: id,
+                urlFoto: url,
+                mes,
+                ano
+            });   
+            limparDir();
         }
 
-    for (let i = 0; i < 24; i++) {
+        await loadImageAndSave(id, numero, 4, 2022);
+    
+        }
+
+    for (let i = 0; i < numeroImagens; i++) {
         gerarComprovante(nomeAlunos, nomeModalidades);
     }
     
@@ -362,7 +397,7 @@ exports.seedTestes = expressAsyncHandler(async (req, res) => {
         dataDeCriacao: data1
     };
     let atividade2 = {
-        nomeModalidade: "Yoga 1",
+        nomeModalidade: "Yoga 2",
         horario: "09:00",
         dias: ["Terça", "Quinta"],
         dataDeCriacao: data2
@@ -378,9 +413,9 @@ exports.seedTestes = expressAsyncHandler(async (req, res) => {
     const ids = modalidades.map(element => element._id.toString());
 
     await Aluno.create({
-        primeiroNome: 'Thiago',
+        primeiroNome: 'Thales',
         sobrenome: 'Lanza',
-        email: 'thlanza@gmail.com',
+        email: 'thaleslanza@gmail.com',
         senha: 'senha1',
         fotoDePerfil: faker.image.avatar(640, 480, true),
         modalidade: elementoAleatorio(ids),

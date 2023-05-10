@@ -64,6 +64,7 @@ exports.mudarModalidade = expressAsyncHandler(async (req, res) => {
 exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) => {
     const { mes, ano
      } = req?.body;
+
     const localPath = `./${req.file.filename}`;
     const { url } = await cloudinaryUploadImage(localPath);
     const idAluno = req?.usuario?._id;
