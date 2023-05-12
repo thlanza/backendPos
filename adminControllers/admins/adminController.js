@@ -84,6 +84,7 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
         senha: req?.body?.senha,
         fotoDePerfil: url
     });
+    console.log("url", url);
     //3. Deletar a imagem no servidor local
     limparDir();
     res.json({
