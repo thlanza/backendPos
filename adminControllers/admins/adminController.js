@@ -83,7 +83,7 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
         sobrenome: req?.body?.sobrenome,
         email: req?.body?.email,
         senha: req?.body?.senha,
-        fotoDePerfil: url
+        fotoDePerfil: "teste.jpg"
     });
     //3. Deletar a imagem no servidor local
     limparDir();
