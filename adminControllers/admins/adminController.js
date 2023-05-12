@@ -75,8 +75,9 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
     //1. Caminho local para a imagem
     const localPath = `./${req.file.filename}`;
     //2. Fazer upload para o serviço Cloudinary
-    
-    const { url } = await cloudinaryUploadImage(localPath);
+    console.log("localPath", localPath);
+    const resultado = await cloudinaryUploadImage(localPath);
+    console.log("resultado", resultado);
     const admin = await Admin.create({
         primeiroNome: req?.body?.primeiroNome,
         sobrenome: req?.body?.sobrenome,
@@ -84,7 +85,6 @@ exports.registrar = expressAsyncHandler(async (req, res) => {
         senha: req?.body?.senha,
         fotoDePerfil: url
     });
-    console.log("url", url);
     //3. Deletar a imagem no servidor local
     limparDir();
     res.json({
