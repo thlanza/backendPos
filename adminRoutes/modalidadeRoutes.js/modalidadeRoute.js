@@ -17,10 +17,10 @@ const modalidadeRouter = express.Router();
 
 modalidadeRouter.post('/', authMiddleware('admin'), criarModalidade);
 modalidadeRouter.get('/', getModalidades);
-modalidadeRouter.post('/seed', seedModalidades);
-modalidadeRouter.post('/seedModalidadesCalendario', seedModalidadesTesteCalendario);
+modalidadeRouter.get('/seed', seedModalidades);
+modalidadeRouter.get('/seedModalidadesCalendario', seedModalidadesTesteCalendario);
 modalidadeRouter.delete('/modalidade/:id', authMiddleware('admin'), validar, deletarModalidade);
-modalidadeRouter.delete('/deletarColecaoModalidades', deletarColecaoModalidades);
+modalidadeRouter.get('/deletarColecaoModalidades', deletarColecaoModalidades);
 modalidadeRouter.put('/modalidade/:id', authMiddleware('admin'), validar, atualizarModalidade);
 modalidadeRouter.get('/modalidade/:id', validar, umaModalidade);
 modalidadeRouter.get('/download', 

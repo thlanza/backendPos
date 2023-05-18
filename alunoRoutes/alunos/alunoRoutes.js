@@ -30,8 +30,8 @@ alunoRouter.post('/logar', logar);
 
 alunoRouter.post('/matricularGoogle', matricularGoogle)
 
-alunoRouter.post('/seedAlunos', seedAlunos);
-alunoRouter.delete('/deletarColecaoAlunos', deletarColecaoAlunos);
+alunoRouter.get('/seedAlunos', seedAlunos);
+alunoRouter.get('/deletarColecaoAlunos', deletarColecaoAlunos);
 alunoRouter.delete('/cancelarInscricao', authMiddleware('usuario'), cancelarInscricao);
 
 alunoRouter.get('/download', 
