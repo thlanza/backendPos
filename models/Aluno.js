@@ -20,6 +20,8 @@ const Aluno = Base.discriminator('Aluno', new mongoose.Schema({
                 default: () => Date.now()
             }
 }));
+
+
 module.exports = Aluno;
 
 

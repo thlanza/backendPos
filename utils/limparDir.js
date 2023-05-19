@@ -17,7 +17,7 @@ exports.limparDir = () => {
         }
     
         walkSync(myPath, function(filePath, stat) {
-            const permitidos = ['.jpg', '.jpeg'];
+            const permitidos = ['.jpg', '.jpeg', '.png'];
             const extensao = path.extname(filePath).toLowerCase();
             if(!permitidos.includes(extensao)) {
                 filePath = '';

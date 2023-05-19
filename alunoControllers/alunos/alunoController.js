@@ -49,16 +49,8 @@ return res.json({
 exports.mudarModalidade = expressAsyncHandler(async (req, res) => {
     const { modalidadeEscolhida } = req.body;
     const userId = req?.usuario?.id?.toString();
-    const aluno = await Aluno.findById(userId).populate('modalidade');
-    const todasModalidades= await Modalidade.find({ });
-    const modalidadesPossiveis = Array.from(new Set(todasModalidades.map(elemento => elemento.nomeModalidade)));
-    if (!modalidadesPossiveis.includes(modalidadeEscolhida)) {
-        throw new Error('A modalidade deve ser uma das já existentes.')
-    };
-    const modalidadeId = aluno.modalidade._id;
-    const atualizacao = { nomeModalidade: modalidadeEscolhida }
-    const modalidadeModificada = await Modalidade.findByIdAndUpdate(modalidadeId, atualizacao);
-    return res.json({ modalidadeModificada })
+    const aluno = await Aluno.findByIdAndUpdate(userId, { modalidade: modalidadeEscolhida }, {new: true});
+    return res.json({ aluno })
 });
 
 exports.uploadDeComprovanteDePagamento = expressAsyncHandler(async (req, res) => {

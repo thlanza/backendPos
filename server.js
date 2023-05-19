@@ -7,12 +7,14 @@ const adminRouter = require('./adminRoutes/admins/adminRoute');
 const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRoute');
 const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
-const authRouter = require('./authRoutes/authRoutes');
 const estatisticaRouter = require('./estatisticaRouter/estatisticaRouter');
+const { limparDir } = require('./utils/limparDir');
 
 
 //DB
-dbConnect();
+require('./config/dbConnect');
+
+limparDir();
 
 //Middleware
 app.use(express.json());
@@ -24,57 +26,19 @@ app.use(
 	})
 );
 
-// app.use(
-//     cookieSession({
-//         name: "session",
-//         keys: ["thlanza"],
-//         maxAge: 24 * 60 * 60 * 100
-//     })
-// );
-
-// app.use(session({
-//     secret: "secret",
-//     resave: false ,
-//     saveUninitialized: true ,
-//     cookie: { secure: true }
-// }))
-
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// if (!fs.existsSync){
-//     fs.mkdirSync(dir, { recursive: true });
-// }
-
-
-
-// function makeDir(dir, recursive=false) {
-//     if (recursive === false) {
-//         if (!fs.existsSync){
-//             fs.mkdirSync(dir);
-//         }
-//     } else {
-//         if (!fs.existsSync){
-//             fs.mkdirSync(dir, { recursive: true });
-//         }
-//     }
-// }
-
-// makeDir(dirPublic);
-// makeDir(dirImagens);
-// makeDir(dirPerfilAluno);
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
 app.use('/api/alunos', alunoRouter);
 app.use('/api/estatisticas', estatisticaRouter)
-app.use('/auth', authRouter);
 
 //error handlers
 app.use(notFound);
 app.use(errorHandler);
 
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, console.log(`Servidor rodando na porta ${PORT}`));
+
+module.exports = app;

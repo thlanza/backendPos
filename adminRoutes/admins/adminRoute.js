@@ -1,5 +1,5 @@
 const express = require('express');
-const { primeiroLogin, registrar, login, deletarAdmin, listaDePresenca, painelDeComprovantes, validarComprovante, seedComprovantes, criarImagensComprovantes, deletarImagens, mudancaDeMes, seedTestes, resetTestes, indiceInadimplencia, numeroAlunos } = require('../../adminControllers/admins/adminController');
+const { primeiroLogin, registrar, login, deletarAdmin, listaDePresenca, painelDeComprovantes, validarComprovante, seedComprovantes, criarImagensComprovantes, deletarImagens, mudancaDeMes, seedTestes, resetTestes, indiceInadimplencia, numeroAlunos, seedDemonstracao } = require('../../adminControllers/admins/adminController');
 const authMiddleware = require('../../middlewares/auth/authMiddeware');
 const { photoUpload, redimensionar } = require('../../middlewares/upload/photoUpload');
 
@@ -23,6 +23,7 @@ adminRouter.get('/seedTestes', seedTestes);
 adminRouter.get('/resetTestes', resetTestes);
 adminRouter.get('/indice', indiceInadimplencia);
 adminRouter.get('/numero', numeroAlunos);
+adminRouter.get('/seedDemonstracao', seedDemonstracao);
 
 
 module.exports = adminRouter;

@@ -9,7 +9,7 @@ const Comprovante = require("../../models/Comprovante");
 const Aluno = require("../../models/Aluno");
 const { validarMongoIdMetodo } = require("../../utils/validarMongoId");
 const { loadImage, createCanvas } = require('canvas');
-const { dataAleatoria, elementoAleatorio } = require("../../utils/aleatorios");
+const { dataAleatoria, elementoAleatorio, aleatorioRetira, numeroAleatorio } = require("../../utils/aleatorios");
 const path = require('path');
 const { faker } = require('@faker-js/faker');
 const { limparDir } = require("../../utils/limparDir");
@@ -116,10 +116,7 @@ exports.listaDePresenca = expressAsyncHandler(async (req, res) => {
         const modalidades = await Modalidade.findById(modalidadeId).populate('alunos');
         const alunos = modalidades.alunos;
         const nomeModalidade = modalidades.nomeModalidade;
-        let nomesAlunos = alunos.map(aluno => ({
-            'nomeAluno': `${aluno.primeiroNome} ${aluno.sobrenome}`,
-            'presenca': 'não informado'
-        }));
+        let idAlunos = alunos.map(aluno => aluno._id);
         const presenca = await Presenca.create({
             presencas: nomesAlunos,
             dataDaPresenca: data,
@@ -142,6 +139,7 @@ exports.painelDeComprovantes = expressAsyncHandler(async (req, res) => {
 
 exports.validarComprovante = expressAsyncHandler(async (req, res) => { 
     const { valido, idComprovante } = req.body;
+    console.log(valido==="valido");
     const deletar = async (url) => {
         const re =  /(?:.+\/)(.+)/;
         const resultados = re.exec(url);
@@ -155,7 +153,8 @@ exports.validarComprovante = expressAsyncHandler(async (req, res) => {
     if (valido==="valido") {
         const idAluno = comprovante.idAluno;
         const aluno = await Aluno.findById(idAluno);
-        if (aluno.mesesInadimplente === 1 || 0) {
+        console.log("aluno", aluno)
+        if (aluno.mesesInadimplente === 1 || aluno.mesesInadimplente === 0) {
             const atualizacao = {
                 inadimplente: false,
                 mesesInadimplente: 0
@@ -167,6 +166,7 @@ exports.validarComprovante = expressAsyncHandler(async (req, res) => {
             });
         
             await Comprovante.deleteOne({ _id: idComprovante })
+            console.log("deletado");
             return res.status(200).json({ comprovante: "válido" });
         };
         if (aluno.mesesInadimplente > 1) {
@@ -190,7 +190,9 @@ exports.validarComprovante = expressAsyncHandler(async (req, res) => {
         await Comprovante.deleteOne({ _id: idComprovante })
         return res.status(200).json({ comprovante: "inválido" });
     }
+    if (valido!=="valido" && valido !=="invalido") {
     throw new Error("Deve ser válido ou inválido");
+    }
 });
 
 
@@ -386,6 +388,92 @@ exports.mudancaDeMes = expressAsyncHandler(async (req, res) => {
     res.status(200).json("um mês se passou, ajustes foram feitos");
 });
 
+exports.seedDemonstracao = expressAsyncHandler(async (req, res) => {
+    let array = [];
+
+    let arrayModalidades = [
+        "Natação 1",
+        "Natação 2",
+        "Yoga 1",
+        "Musculação 1",
+        "Musculação 2",
+        "Ginástica 1",
+        "Spinning 1",
+    ];
+    let arrayHorarios = [
+        "08:00",
+        "09:00",
+        "10:30",
+        "11:30",
+        "14:00",
+        "15:30",
+        "16:30",
+        "18:00",
+        "19:00",
+        "20:30"
+    ];
+    let arrayDias = [
+        ["Segunda", "Quarta"],
+        ["Terça", "Quinta"],
+        ["Quarta", "Sexta"]
+    ]
+    for (let i = 0; i < 6; i++) {
+        dataInicial = new Date(2022, 3, 1);
+        dataFinal = new Date(2022, 11, 31);
+        array.push({
+            nomeModalidade: aleatorioRetira(arrayModalidades),
+            horario: elementoAleatorio(arrayHorarios),
+            dias: elementoAleatorio(arrayDias),
+            dataDeCriacao: dataAleatoria(dataInicial, dataFinal)
+        });
+    }
+
+  
+    await Modalidade.insertMany(array)
+  
+
+    const modalidades = await Modalidade.find({});
+    const ids = modalidades.map(element => element._id.toString());
+    let arrayBoolean = [true, false];
+
+    let arrayAlunos = [];
+
+    const gerarUsuarioAleatorio = () => {
+        let dataInicial, dataFinal;
+        dataInicial = new Date(2022, 3, 1);
+        dataFinal = new Date(2022, 11, 31);
+        const booleano = elementoAleatorio(arrayBoolean);
+        let mesesInadimplente;
+        if (booleano) {
+            mesesInadimplente = numeroAleatorio(5);
+        } else {
+            mesesInadimplente = 0;
+        }
+        return {
+            primeiroNome: faker.name.firstName(),
+            sobrenome: faker.name.lastName(),
+            email: faker.internet.email(),
+            senha: 'lanza1',
+            fotoDePerfil: faker.image.avatar(640, 480, true),
+            modalidade: elementoAleatorio(ids),
+            inadimplente: booleano,
+            dataDeInscricao: dataAleatoria(dataInicial, dataFinal),
+            mesesInadimplente
+        }
+    }
+
+
+    for (let i = 0; i < 50; i++) {
+        arrayAlunos.push(gerarUsuarioAleatorio());
+    }
+
+
+    await Aluno.insertMany(arrayAlunos);
+
+    return res.json("pronto")
+});
+
+
 exports.seedTestes = expressAsyncHandler(async (req, res) => {
     let array = [];
 
@@ -446,7 +534,7 @@ exports.seedTestes = expressAsyncHandler(async (req, res) => {
         mesesInadimplente: 2
     });
 
-    const alunos = await Aluno.find({});
+    const alunos = await Aluno.find({}).lean();
     const idsAlunos = alunos.map(element => element._id.toString());
 
     let enumPresencas =  ['presente', 'faltou', 'não informado'];
@@ -469,13 +557,12 @@ exports.seedTestes = expressAsyncHandler(async (req, res) => {
         });   
     }
 
+ 
     await Presenca.create({
         presencas: arrayPresencas,
         dataDaPresenca: '02/02/2022',
         nomeModalidade: 'Natação 1'
     });
-
-
 
     return res.json("pronto")
 });
