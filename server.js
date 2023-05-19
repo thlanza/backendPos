@@ -7,15 +7,6 @@ const adminRouter = require('./adminRoutes/admins/adminRoute');
 const modalidadeRouter = require('./adminRoutes/modalidadeRoutes.js/modalidadeRoute');
 const alunoRouter = require('./alunoRoutes/alunos/alunoRoutes');
 const app = express();
-const passport = require('passport');
-const passportSetup = require('./passport');
-const cookieSession = require('cookie-session');
-const session = require('express-session');
-const authRouter = require('./authRoutes/authRoutes');
-const fs = require('fs');
-let dirPublic = './public';
-let dirImagens = './public/imagens'
-let dirPerfilAluno = './public/imagens/perfilAluno';
 
 //DB
 dbConnect();
@@ -30,51 +21,10 @@ app.use(
 	})
 );
 
-app.use(
-    cookieSession({
-        name: "session",
-        keys: ["thlanza"],
-        maxAge: 24 * 60 * 60 * 100
-    })
-);
-
-app.use(session({
-    secret: "secret",
-    resave: false ,
-    saveUninitialized: true ,
-    cookie: { secure: true }
-}))
-
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-if (!fs.existsSync){
-    fs.mkdirSync(dir, { recursive: true });
-}
-
-
-
-function makeDir(dir, recursive=false) {
-    if (recursive === false) {
-        if (!fs.existsSync){
-            fs.mkdirSync(dir);
-        }
-    } else {
-        if (!fs.existsSync){
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    }
-}
-
-makeDir(dirPublic);
-makeDir(dirImagens);
-makeDir(dirPerfilAluno);
 
 app.use('/api/admin', adminRouter);
 app.use('/api/modalidades', modalidadeRouter);
 app.use('/api/alunos', alunoRouter);
-app.use('/auth', authRouter);
 
 //error handlers
 app.use(notFound);
